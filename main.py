@@ -22,8 +22,15 @@ app = FastAPI()
 
 
 @app.post('/create-post')
-def create_post(dependancies= Depends(JWTBearer()), session: Session= Depends(get_session):
-    
+def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session: Session= Depends(get_session)):
+   token = dependancies
+   payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
+   user_id = payload['sub']
+   
+   print(request) 
+   return {}
+
+
 
 @app.post('/logout')
 def logout(dependancies=Depends(JWTBearer()), session:Session = Depends(get_session)):
