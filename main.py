@@ -89,10 +89,10 @@ def login(request:schemas.requestdetails, session:Session = Depends(get_session)
     password_hash = user.password
     if not verify_password(request.password, password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password")
-    access = create_access_token(user.id)
-    refresh = create_refresh_token(user.id)
+    access = create_access_token(user.user_id)
+    refresh = create_refresh_token(user.user_id)
 
-    token_db = models.TokenTable(user_id=user.id, access_token=access, refresh_token=refresh, status=True)
+    token_db = models.TokenTable(user_id=user.user_id, access_token=access, refresh_token=refresh, status=True)
     session.add(token_db)
     session.commit()
     session.refresh(token_db)

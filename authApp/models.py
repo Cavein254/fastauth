@@ -34,4 +34,4 @@ class Post(Base):
     created_date = Column(DateTime, default=datetime.datetime.now)
     updated_on = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
-    user = relationship("User", backref=backref('orders', order_by="created_date"))
+    user = relationship("User", backref=backref('orders'))
