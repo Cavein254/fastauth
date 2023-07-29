@@ -2,6 +2,7 @@ from authApp import schemas, models
 from authApp.database import Base,engine,SessionLocal
 from fastapi import FastAPI,Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from authApp.utils import get_hashed_password
 
 Base.metadata.create_all(engine)
 def get_session():
