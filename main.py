@@ -18,6 +18,7 @@ def get_session():
 
 app = FastAPI()
 
+
 @app.post('/login')
 def login(request:schemas.requestdetails, Session = Depends(get_session)):
     user = db.query(User).filter(User.email == request.email).first()
