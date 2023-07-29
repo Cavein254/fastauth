@@ -2,7 +2,7 @@ from authApp import schemas, models
 from authApp.database import Base,engine,SessionLocal
 from fastapi import FastAPI,Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from auth_bearer import JWTBearer
+from authApp.auth_bearer import JWTBearer
 from functools import wraps
 from sqlalchemy.orm import Session
 from authApp.utils import get_hashed_password
@@ -18,6 +18,11 @@ def get_session():
 
 app = FastAPI()
 
+
+@app.get('/getusers')
+def getusers(dependancies=Depends(JWTBearer()), session: Session = Depends(get_session)):
+    users = session.query(models.User).all()
+    return users
 
 @app.post('/login')
 def login(request:schemas.requestdetails, Session = Depends(get_session)):
