@@ -5,7 +5,8 @@ from fastapi.security import OAuth2PasswordBearer
 from authApp.auth_bearer import JWTBearer
 from functools import wraps
 from sqlalchemy.orm import Session
-import datetime
+from jose import jwt
+from datetime import datetime, timedelta
 from authApp.utils import get_hashed_password
 from authApp.utils import ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM,create_access_token,create_refresh_token, verify_password, get_hashed_password, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
 
@@ -20,26 +21,25 @@ def get_session():
 app = FastAPI()
 
 @app.post('/logout')
-def logout(dependancies=Depends(JWTBearer()), db:Session = Depends(get_session)):
+def logout(dependancies=Depends(JWTBearer()), session:Session = Depends(get_session)):
     token = dependancies
     payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
     user_id = payload['sub']
-    token_record = db.query(models.TokenTable).all()
+    token_record = session.query(models.TokenTable).all()
     info = []
     for record in token_record:
-        print("record", record)
         if (datetime.utcnow() - record.created_date).days > 1:
             info.append(record.user_id)
     if info:
-        existing_token = db.query(models.TokenTable).where(TokenTable.user_id.in_(info)).delete()
-        db.commit()
+        existing_token = session.query(models.TokenTable).where(TokenTable.user_id.in_(info)).delete()
+        session.commit()
  
-    existing_token = db.query(models.TokenTable).filter(models.TokenTable.user_id == user_id, models.TokenTable.access_token == token).first()
+    existing_token = session.query(models.TokenTable).filter(models.TokenTable.user_id == user_id, models.TokenTable.access_token == token).first()
     if existing_token:
         existing_token.status = False
-        db.add(existing_token)
-        db.commit()
-        db.refresh(existing_token)
+        session.add(existing_token)
+        session.commit()
+        session.refresh(existing_token)
     return {"message": "Logout Successfully"}
         
 @app.post('/change-password')
