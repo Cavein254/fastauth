@@ -20,21 +20,28 @@ def get_session():
 
 app = FastAPI()
 
+@app.get('/admin')
+def admin_page(dependancies= Depends(JWTBearer()), session: Session= Depends(get_session)):
+    token = dependancies
+    payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
+    user_id = payload['sub']
+    existing_user = session.query(models.User).filter(models.User.user_id == user_id).first()
+    if existing_user is None:
+        raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail="User does not exist")
+    is_admin = payload['access']
+    if is_admin == True:
+        return {"msg":"welcome to the admin page"}
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Only admin users can access this page")
 
 @app.post('/create-post')
 def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session: Session= Depends(get_session)):
    token = dependancies
    payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
-   print("###########################")
-   print("###########################")
-   print("###########################")
-   print("###########################")
-   print("###########################")
-   print(payload)
    user_id = payload['sub']
    existing_user = session.query(models.User).filter(models.User.user_id == user_id).first()
    if existing_user is None:
-        raise HTTPException(status_code.HTTP_400_BAD_REQUEST, detail="User does not exist")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist")
 
    post_db=models.Post(author_id= user_id,title=request.title, post = request.post)
    session.add(post_db)
@@ -101,8 +108,6 @@ def login(request:schemas.requestdetails, session:Session = Depends(get_session)
     if not verify_password(request.password, password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password")
     access = create_access_token(subject=user.user_id, level_access=user.admin)
-    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    print(user.admin)
     refresh = create_refresh_token(user.user_id)
 
     token_db = models.TokenTable(user_id=user.user_id, access_token=access, refresh_token=refresh, status=True)
