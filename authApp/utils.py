@@ -3,6 +3,8 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from typing import Union, Any
 from jose import jwt
+from functools import wraps
+
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 # 1 HOUR
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14 # 2 WEEKS
@@ -38,3 +40,17 @@ def create_refresh_token(subject: Union[str, Any], expires_delta: int = None) ->
     to_encode = {"exp": expires_delta, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, JWT_SECRET_KEY, ALGORITHM)
     return encoded_jwt
+
+def token_required(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        payload = jwt.decode(kwargs['dependecies'], JWT_SECRET_KEY, ALGORITHM)
+        user_id = payload['sub']
+        data = kwargs['session'].query[models.TokenTable].filter_by(user_id = user_id, access_token=kwargs['dependencies'], status=True).first()
+        if data:
+            return func(kwargs['dependencies'], kwargs['session'])
+        else:
+            return {"msg":"Token blocked"}
+        
+        return wrapper
