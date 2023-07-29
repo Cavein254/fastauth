@@ -4,11 +4,16 @@ import datetime
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, primary_key=True)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(150), unique=True, nullable=False, index=True)
     password = Column(String(250), nullable=False)
     admin = Column(Boolean, default=False)
+
+    def __repr__(self):
+        return "User(username='{self.username}', "\
+            "email_address='{self.email}')".format(self=self)
+
 
 class TokenTable(Base):
     __tablename__ = "token"
@@ -21,8 +26,11 @@ class TokenTable(Base):
 class Post(Base):
     __tablename__ = "posts"
     post_id = Column(Integer, primary_key=True)
-    author_id = Column(Integer(), ForeignKey('users.id'))
+    author_id = Column(Integer, ForeignKey('users.user_id'))
     title=Column(String, nullable=False)
     post=Column(String, nullable=False)
     published = Column(Boolean)
     created_date = Column(DateTime, default=datetime.datetime.now)
+    updated_on = Column(DateTime, default=datetime.datetime.now, updated_on=datetime.datetime.now)
+
+    user = relationship("User", backref=backref('orders', order_by="created_date"))

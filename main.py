@@ -26,9 +26,17 @@ def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session
    token = dependancies
    payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
    user_id = payload['sub']
-   
-   print(request) 
-   return {}
+   existing_user = session.query(models.User).filter(models.User.id == user_id).first()
+   if existing_user is None:
+        raise HTTPException(status_code.HTTP_400_BAD_REQUEST, detail="User does not exist")
+
+   post_db=models.Post(title=request.title, post = request.post)
+   session.add(post_db)
+   session.commit()
+   return {
+    "msg": "Post Created successfully",
+    "payload": "Completed"
+   }
 
 
 
