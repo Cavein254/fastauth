@@ -43,8 +43,8 @@ def logout(dependancies=Depends(JWTBearer()), db:Session = Depends(get_session))
     return {"message": "Logout Successfully"}
         
 @app.post('/change-password')
-def change_password(request:schemas.changepassword, db:Session = Depends(get_session)):
-    user = db.query(models.User).filter(models.User.email == request.email).first()
+def change_password(request:schemas.changepassword, session:Session = Depends(get_session)):
+    user = session.query(models.User).filter(models.User.email == request.email).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
     if not verify_password(request.old_password, user.password):
@@ -52,7 +52,7 @@ def change_password(request:schemas.changepassword, db:Session = Depends(get_ses
     
     password_hash = get_hashed_password(request.new_password)
     user.password = password_hash
-    db.commit()
+    session.commit()
 
     return {"message": "Password changed successfully", "payload":user}
 
@@ -62,8 +62,8 @@ def getusers(dependancies=Depends(JWTBearer()), session: Session = Depends(get_s
     return users
 
 @app.post('/login')
-def login(request:schemas.requestdetails, Session = Depends(get_session)):
-    user = db.query(User).filter(User.email == request.email).first()
+def login(request:schemas.requestdetails, session:Session = Depends(get_session)):
+    user = session.query(models.User).filter(models.User.email == request.email).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email")
     password_hash = user.password
@@ -73,9 +73,9 @@ def login(request:schemas.requestdetails, Session = Depends(get_session)):
     refresh = create_refresh_token(user.id)
 
     token_db = models.TokenTable(user_id=user.id, access_token=access, refresh_token=refresh, status=True)
-    db.add(token_db)
-    db.commit()
-    db.refresh(token_db)
+    session.add(token_db)
+    session.commit()
+    session.refresh(token_db)
     return {
         "access_token": access,
         "refresh_token": refresh,

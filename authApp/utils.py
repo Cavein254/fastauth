@@ -20,7 +20,7 @@ def get_hashed_password(password:str) -> str:
 def verify_password(password:str, password_hash:str) -> bool:
     return password_context.verify(password, password_hash)
 
-def create_access_token(subject: Union[str, Any],expires_delta:None) -> str:
+def create_access_token(subject: Union[str, Any],expires_delta: int = None) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
