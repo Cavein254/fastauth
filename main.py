@@ -87,7 +87,7 @@ def register_user(user:schemas.UserCreate, session:Session = Depends(get_session
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already exists")
     password_hash = get_hashed_password(user.password)
-    new_user = models.User(user=user.username, password=password_hash, email=user.email)
+    new_user = models.User(username=user.username, password=password_hash, email=user.email)
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
