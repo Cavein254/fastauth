@@ -25,12 +25,18 @@ app = FastAPI()
 def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session: Session= Depends(get_session)):
    token = dependancies
    payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
+   print("###########################")
+   print("###########################")
+   print("###########################")
+   print("###########################")
+   print("###########################")
+   print(payload)
    user_id = payload['sub']
-   existing_user = session.query(models.User).filter(models.User.id == user_id).first()
+   existing_user = session.query(models.User).filter(models.User.user_id == user_id).first()
    if existing_user is None:
         raise HTTPException(status_code.HTTP_400_BAD_REQUEST, detail="User does not exist")
 
-   post_db=models.Post(title=request.title, post = request.post)
+   post_db=models.Post(author_id= user_id,title=request.title, post = request.post)
    session.add(post_db)
    session.commit()
    return {
@@ -39,11 +45,16 @@ def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session
    }
 
 
+@app.get('/posts')
+def index(session:Session = Depends(get_session)):
+    posts = session.query(models.Post).all()
+    return posts
 
 @app.post('/logout')
 def logout(dependancies=Depends(JWTBearer()), session:Session = Depends(get_session)):
     token = dependancies
     payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
+    
     user_id = payload['sub']
     token_record = session.query(models.TokenTable).all()
     info = []
@@ -89,7 +100,9 @@ def login(request:schemas.requestdetails, session:Session = Depends(get_session)
     password_hash = user.password
     if not verify_password(request.password, password_hash):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid password")
-    access = create_access_token(user.user_id)
+    access = create_access_token(subject=user.user_id, level_access=user.admin)
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    print(user.admin)
     refresh = create_refresh_token(user.user_id)
 
     token_db = models.TokenTable(user_id=user.user_id, access_token=access, refresh_token=refresh, status=True)

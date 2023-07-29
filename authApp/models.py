@@ -30,7 +30,7 @@ class Post(Base):
     author_id = Column(Integer, ForeignKey('users.user_id'))
     title=Column(String, nullable=False)
     post=Column(String, nullable=False)
-    published = Column(Boolean)
+    published = Column(Boolean, default=False)
     created_date = Column(DateTime, default=datetime.datetime.now)
     updated_on = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
