@@ -5,6 +5,7 @@ class UserCreate(BaseModel):
     username:str
     email:str
     password:str
+    admin:str | None
 
 class requestdetails(BaseModel):
     email:str
@@ -25,3 +26,7 @@ class TokenCreate(BaseModel):
     refresh_token:str
     status:bool
     created_date: datetime.datetime
+
+class Post(BaseModel):
+    title: str
+    post:str
