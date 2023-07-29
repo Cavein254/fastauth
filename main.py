@@ -43,7 +43,7 @@ def logout(dependancies=Depends(JWTBearer()), db:Session = Depends(get_session))
     return {"message": "Logout Successfully"}
         
 @app.post('/change-password')
-def change_password(request:schemas.changepassword, session:Session = Depends(get_session)):
+def change_password(request:schemas.changepassword, session:Session = Depends(get_session),dependencies=Depends(JWTBearer())):
     user = session.query(models.User).filter(models.User.email == request.email).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
