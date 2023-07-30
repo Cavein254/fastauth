@@ -1,7 +1,8 @@
 from fastapi.testclient import TestClient
 from typing import Annotated
 from pydantic import BaseModel
-from fastapi import FastAPI
+
+from .main import app
 
 
 fake_secret = 'superduppersecret'
@@ -10,14 +11,6 @@ fake_db = {
     "foo": {"id": "foo", "title": "foo", "description": "This is foo"},
     "bar": {"id": "bar", "title": "bar", "description": "This is bar"}
 }
-
-
-app = FastAPI()
-
-@app.get('/')
-async def read_main():
-    return {"msg":"Hello, world"}
-
 
 client = TestClient(app)
 

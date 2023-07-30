@@ -1,15 +1,15 @@
-from authApp import schemas, models, crud
-from authApp.database import Base,engine,SessionLocal
+from .authapp import schemas, models, crud
+from .authapp.database import Base,engine,SessionLocal
 from fastapi import FastAPI,Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from authApp.auth_bearer import JWTBearer
+from .authapp.auth_bearer import JWTBearer
 from functools import wraps
 from sqlalchemy.orm import Session
 from jose import jwt
 from datetime import datetime, timedelta
-from authApp.database import SessionLocal, engine
-from authApp.utils import get_hashed_password
-from authApp.utils import ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM,create_access_token,create_refresh_token, verify_password, get_hashed_password, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
+from .authapp.database import SessionLocal, engine
+from .authapp.utils import get_hashed_password
+from .authapp.utils import ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM,create_access_token,create_refresh_token, verify_password, get_hashed_password, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
 
 Base.metadata.create_all(engine)
 def get_session():
@@ -21,6 +21,9 @@ def get_session():
 
 app = FastAPI()
 
+@app.get('/')
+def index():
+    return {"msg":"welcome to your homepage!"}
 
 @app.get('/users/{user_id}', response_model=schemas.GetUser)
 async def get_user_by_id(user_id: int, dependancies= Depends(JWTBearer()), session:Session = Depends(get_session)) :
@@ -62,7 +65,7 @@ async def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), s
 
 
 @app.get('/posts')
-async def index(skip:int = 0, limit: int = 100, session:Session = Depends(get_session)):
+async def get_posts(skip:int = 0, limit: int = 100, session:Session = Depends(get_session)):
     posts = await crud.get_all_posts(session, skip=skip, limit=limit)
     return posts
 
