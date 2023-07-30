@@ -11,9 +11,12 @@ class User(Base):
     password = Column(String(250), nullable=False)
     admin = Column(Boolean, default=False)
 
+    posts = relationship("Post", back_populates="posts")
+
     def __repr__(self):
         return "User(username='{self.username}', "\
             "email_address='{self.email}')".format(self=self)
+    
 
 
 class TokenTable(Base):
@@ -34,4 +37,4 @@ class Post(Base):
     created_date = Column(DateTime, default=datetime.datetime.now)
     updated_on = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
-    user = relationship("User", backref=backref('orders'))
+    user = relationship("User", back_populates=("users.user_id"))
