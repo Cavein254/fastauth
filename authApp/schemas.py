@@ -5,8 +5,20 @@ class UserCreate(BaseModel):
     username:str
     email:str
     password:str
-    admin:str | None
+    admin:bool
 
+    class Config:
+        orm_mode = True
+
+class getUser(BaseModel):
+    username: str
+    email:str
+    admin: bool
+    posts: list[Post]
+
+    class Config:
+        orm_mode = True
+        
 class requestdetails(BaseModel):
     email:str
     password:str
@@ -26,6 +38,9 @@ class TokenCreate(BaseModel):
     refresh_token:str
     status:bool
     created_date: datetime.datetime
+
+    class Config:
+        orm_mode = True
 
 class Post(BaseModel):
     title: str
