@@ -11,7 +11,7 @@ class User(Base):
     password = Column(String(250), nullable=False)
     admin = Column(Boolean, default=False)
 
-    posts = relationship("Post", back_populates="posts")
+    posts = relationship("Post", back_populates="author")
 
     def __repr__(self):
         return "User(username='{self.username}', "\
@@ -37,4 +37,4 @@ class Post(Base):
     created_date = Column(DateTime, default=datetime.datetime.now)
     updated_on = Column(DateTime, default=datetime.datetime.now, onupdate=datetime.datetime.now)
 
-    user = relationship("User", back_populates=("users.user_id"))
+    author = relationship("User", back_populates=("posts"))

@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 import datetime
 
+
+class User(BaseModel):
+    username:str
+    email: str
+    admin: bool
+
 class UserCreate(BaseModel):
     username:str
     email:str
@@ -10,15 +16,7 @@ class UserCreate(BaseModel):
     class Config:
         orm_mode = True
 
-class getUser(BaseModel):
-    username: str
-    email:str
-    admin: bool
-    posts: list[Post]
-
-    class Config:
-        orm_mode = True
-        
+     
 class requestdetails(BaseModel):
     email:str
     password:str
@@ -43,5 +41,18 @@ class TokenCreate(BaseModel):
         orm_mode = True
 
 class Post(BaseModel):
+    author_id: str
     title: str
     post:str
+
+    class Config:
+        orm_mode = True
+
+class GetUser(BaseModel):
+    username: str
+    email:str
+    admin: bool
+    posts: list[Post]
+
+    class Config:
+        orm_mode = True

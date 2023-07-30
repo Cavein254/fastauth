@@ -1,4 +1,4 @@
-from authApp import schemas, models
+from authApp import schemas, models, crud
 from authApp.database import Base,engine,SessionLocal
 from fastapi import FastAPI,Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -19,6 +19,13 @@ def get_session():
         session.close()
 
 app = FastAPI()
+
+@app.get('/users/{user_id}', response_model=schemas.GetUser)
+def get_user_by_id(user_id: int, dependancies= Depends(JWTBearer()), session:Session = Depends(get_session)) :
+    db_user = crud.get_user(session=session, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="The user does not exist")
+    return db_user
 
 @app.get('/admin')
 def admin_page(dependancies= Depends(JWTBearer()), session: Session= Depends(get_session)):
