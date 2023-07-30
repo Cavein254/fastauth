@@ -60,8 +60,8 @@ def create_post(request:schemas.Post,dependancies= Depends(JWTBearer()), session
 
 
 @app.get('/posts')
-def index(session:Session = Depends(get_session)):
-    posts = session.query(models.Post).all()
+def index(skip:int = 0, limit: int = 100, session:Session = Depends(get_session)):
+    posts = crud.get_all_posts(session, skip=skip, limit=limit)
     return posts
 
 @app.post('/logout')
