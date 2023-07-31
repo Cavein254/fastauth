@@ -1,15 +1,15 @@
-from .authapp import schemas, models, crud
-from .authapp.database import Base,engine,SessionLocal
+from authapp import schemas, models, crud
+from authapp.database import Base,engine,SessionLocal
 from fastapi import FastAPI,Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from .authapp.auth_bearer import JWTBearer
+from authapp.auth_bearer import JWTBearer
 from functools import wraps
 from sqlalchemy.orm import Session
 from jose import jwt
 from datetime import datetime, timedelta
-from .authapp.database import SessionLocal, engine
-from .authapp.utils import get_hashed_password
-from .authapp.utils import ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM,create_access_token,create_refresh_token, verify_password, get_hashed_password, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
+from authapp.database import SessionLocal, engine
+from authapp.utils import get_hashed_password
+from authapp.utils import ACCESS_TOKEN_EXPIRE_MINUTES,ALGORITHM,create_access_token,create_refresh_token, verify_password, get_hashed_password, JWT_REFRESH_SECRET_KEY, JWT_SECRET_KEY
 
 Base.metadata.create_all(engine)
 def get_session():
