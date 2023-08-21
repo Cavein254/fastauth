@@ -84,6 +84,7 @@ def create_post(
 ):
     token = dependancies
     payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
+    print(payload)
     user_id = payload["sub"]
     existing_user = (
         session.query(models.User).filter(models.User.user_id == user_id).first()

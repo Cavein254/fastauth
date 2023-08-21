@@ -46,7 +46,6 @@ class TokenCreate(BaseModel):
 
 
 class Post(BaseModel):
-    author_id: str
     title: str
     post: str
 
