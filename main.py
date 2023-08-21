@@ -23,8 +23,6 @@ from authapp.utils import (
     JWT_SECRET_KEY,
 )
 
-Base.metadata.create_all(engine)
-
 
 def get_session():
     session = SessionLocal()
