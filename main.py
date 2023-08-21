@@ -9,6 +9,9 @@ from jose import jwt
 from datetime import datetime, timedelta
 from authapp.database import SessionLocal, engine
 from authapp.utils import get_hashed_password
+from starlette.middleware.cors import CORSMiddleware
+
+
 from authapp.utils import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ALGORITHM,
@@ -32,6 +35,13 @@ def get_session():
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
