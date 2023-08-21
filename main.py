@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from authapp.database import SessionLocal, engine
 from authapp.utils import get_hashed_password
 from starlette.middleware.cors import CORSMiddleware
+from authapp.dbinitializer import get_session
 
 
 from authapp.utils import (
@@ -23,16 +24,8 @@ from authapp.utils import (
     JWT_SECRET_KEY,
 )
 
-
-def get_session():
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
-
-
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origin=["*"],
