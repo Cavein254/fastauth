@@ -61,3 +61,7 @@ class GetUser(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ModifyPost(BaseModel):
+    id: int
