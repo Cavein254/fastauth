@@ -99,6 +99,8 @@ def create_post(
     session.commit()
     return {"msg": "Post Created successfully", "payload": "Completed"}
 
+@app.post("/post{id}")
+def update_post(id:int, )
 
 @app.get("/posts")
 def get_posts(skip: int = 0, limit: int = 100, session: Session = Depends(get_session)):
