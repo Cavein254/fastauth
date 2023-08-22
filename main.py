@@ -46,7 +46,7 @@ def get_user_by_id(
     dependancies=Depends(JWTBearer()),
     session: Session = Depends(get_session),
 ):
-    db_user = crud.get_user(session=session, user_id=user_id)
+    db_user = crud.get_user_by_id(session=session, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="The user does not exist")
     return db_user
@@ -84,7 +84,7 @@ def create_post(
     return {"msg": "Post Created successfully", "payload": "Completed"}
 
 
-@app.post("/post{id}")
+@app.put("/post/{post_id}")
 def update_post(
     request: schemas.ModifyPost,
     session: Session = Depends(get_session),
@@ -95,7 +95,18 @@ def update_post(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist"
         )
-    update_db = models.Post(author_id=user_id, title=request.title, post=request.post)
+    db_post = crud.get_post_by_id(session, post_id=request.post_id)
+    if int(user_id) != int(db_post.author_id):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Users are only allowed to modify their posts",
+        )
+    db_post.title = request.title
+    db_post.post = request.post
+    db_post.published = request.published
+    session.add(db_post)
+    session.commit()
+    return "success"
 
 
 @app.get("/posts")

@@ -64,4 +64,7 @@ class GetUser(BaseModel):
 
 
 class ModifyPost(BaseModel):
-    id: int
+    post_id: int
+    title: str
+    post: str
+    published: bool = Field(default=False)

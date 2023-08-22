@@ -13,7 +13,7 @@ from authapp.utils import (
 )
 
 
-def get_user(session: Session, user_id: int):
+def get_user_by_id(session: Session, user_id: int):
     return session.query(models.User).filter(models.User.user_id == user_id).first()
 
 
@@ -44,3 +44,7 @@ def find_admin(session: Session, dependancies):
     payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
     is_admin = payload["access"]
     return is_admin
+
+
+def get_post_by_id(session: Session, post_id: int):
+    return session.query(models.Post).filter(models.Post.post_id == post_id).first()
