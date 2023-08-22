@@ -56,17 +56,7 @@ def get_user_by_id(
 def admin_page(
     dependancies=Depends(JWTBearer()), session: Session = Depends(get_session)
 ):
-    token = dependancies
-    payload = jwt.decode(token, JWT_SECRET_KEY, ALGORITHM)
-    user_id = payload["sub"]
-    existing_user = (
-        session.query(models.User).filter(models.User.user_id == user_id).first()
-    )
-    if existing_user is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist"
-        )
-    is_admin = payload["access"]
+    is_admin = crud.find_admin(session, dependancies)
     if is_admin == True:
         return {"msg": "welcome to the admin page"}
     else:
@@ -94,13 +84,18 @@ def create_post(
     return {"msg": "Post Created successfully", "payload": "Completed"}
 
 
-# @app.post("/post{id}")
-# def update_post(
-#     request: schemas.ModifyPost,
-#     session: Session = Depends(get_session()),
-#     dependancies=Depends(JWTBearer()),
-# ):
-#     existing_user, user_id = crud.find_user(session)
+@app.post("/post{id}")
+def update_post(
+    request: schemas.ModifyPost,
+    session: Session = Depends(get_session),
+    dependancies=Depends(JWTBearer()),
+):
+    existing_user, user_id = crud.find_user(session, dependancies)
+    if existing_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User does not exist"
+        )
+    update_db = models.Post(author_id=user_id, title=request.title, post=request.post)
 
 
 @app.get("/posts")
